@@ -1,0 +1,19 @@
+<form  onsubmit="createProduct(); return false;">
+    <input type="text" id="productName" placeholder="Nombre del producto" />
+    <input type="number" id="productPrice" placeholder="Precio del producto" />
+    <button class="buttonCrate" type="submit">Crear producto</button>
+</form>
+
+<ul id="productList">
+    {{#each products}}
+        <li>
+            {{this.name}} - ${{this.price}}
+            <button onclick="deleteProduct('{{this.id}}')">Eliminar</button>
+        </li>
+    {{/each}}
+</ul>
+
+
+
+<script src="/socket.io/socket.io.js"></script>
+<script src="/js/index.js"></script>
