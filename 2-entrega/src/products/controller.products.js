@@ -1,20 +1,53 @@
 const {Router} = require('express');
-//const Products = require('../dao/models/products.model');
 const FilesDao = require('../dao/files.dao');
-const uploader = require('../utils/multer.utils');
 const ProductsDao  = require('../dao/products.dao');
+const uploader = require('../utils/multer.utils');
 
 const ProductsFile = new FilesDao('products.json') 
-const router = Router();
 const Products = new ProductsDao()
+const router = Router();
 
 
 
+/* router.get('/',async(req, res)=>{
+    try {
+        const products = await Products.findAll()
+        res.json({message:products})
+    } catch (error) {
+        res.status(400).json({error})
+    }
+}) */
 
 router.get('/',async(req, res)=>{
     try {
-    const products = await Products.findAll()
-    res.json({message:products})
+        const { limit = 10, page = 1, sort, query } = req.query;
+
+        const options = {
+            limit: parseInt(limit),
+            page: parseInt(page),
+            sort: sort ? { price: sort } : null,
+            populate: 'category'
+        };
+
+        const queryFilter = query ? { category: query } : {};
+
+        const products = await Product.paginate(queryFilter, options);
+        
+        const response = {
+            status: 'success',
+            payload: products.docs,
+            totalPages: products.totalPages,
+            prevPage: products.prevPage,
+            nextPage: products.nextPage,
+            page: products.page,
+            hasPrevPage: products.hasPrevPage,
+            hasNextPage: products.hasNextPage,
+            prevLink: products.hasPrevPage ? `/products?page=${products.prevPage}&limit=${limit}&sort=${sort}&query=${query}` : null,
+            nextLink: products.hasNextPage ? `/products?page=${products.nextPage}&limit=${limit}&sort=${sort}&query=${query}` : null,
+        };
+
+        res.json(response);
+
     } catch (error) {
         res.status(400).json({error})
     }
