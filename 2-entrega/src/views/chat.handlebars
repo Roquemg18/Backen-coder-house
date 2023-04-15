@@ -1,0 +1,15 @@
+<h1>Chat</h1>
+  <div>
+    <ul>
+      {{#each messages}}
+        <li>{{this.user}}: {{this.message}}</li>
+      {{/each}}
+    </ul>
+  </div>
+  <form method="post" action="/chat">
+    <div>
+      <label for="message">Message:</label>
+      <input type="text" id="message" name="message" required>
+    </div>
+    <button type="submit">Send</button>
+  </form>
