@@ -2,6 +2,8 @@ const {Router} = require('express');
 const FilesDao = require('../dao/files.dao');
 const ProductsDao  = require('../dao/products.dao');
 const uploader = require('../utils/multer.utils');
+const Product = require('../dao/models/products.model')
+const paginate = require('mongoose-paginate-v2')
 
 const ProductsFile = new FilesDao('products.json') 
 const Products = new ProductsDao()
@@ -9,49 +11,70 @@ const router = Router();
 
 
 
-/* router.get('/',async(req, res)=>{
+
+
+router.get('/', async (req, res) => {
     try {
-        const products = await Products.findAll()
-        res.json({message:products})
+      let limit = req.query.limit || 10;
+      let page = req.query.page || 1;
+      let sort = req.query.sort || '';
+      let query = req.query.query || '';
+      let category = req.query.category || '';
+      let availability = req.query.availability || '';
+  
+      let filters = {};
+  
+      if (query !== '') {
+        filters = { name: { $regex: query, $options: 'i' } };
+      }
+  
+      if (category !== '') {
+        filters = { ...filters, category: category };
+      }
+  
+      if (availability !== '') {
+        filters = { ...filters, available: availability };
+      }
+  
+      let sortOrder = {};
+      if (sort !== '') {
+        sortOrder = { price: sort === 'asc' ? 1 : -1 };
+      }
+  
+      const options = {
+        page: parseInt(page),
+        limit: parseInt(limit),
+        sort: sortOrder,
+      };
+  
+      const products = await Product.paginate(filters, options);
+  
+      const payload = products.docs;
+      const totalPages = products.totalPages;
+      const prevPage = products.prevPage;
+      const nextPage = products.nextPage;
+      const currentPage = products.page;
+      const hasPrevPage = products.hasPrevPage;
+      const hasNextPage = products.hasNextPage;
+      const prevLink = hasPrevPage ? `http://${req.headers.host}${req.baseUrl}?page=${prevPage}&limit=${limit}` : null;
+      const nextLink = hasNextPage ? `http://${req.headers.host}${req.baseUrl}?page=${nextPage}&limit=${limit}` : null;
+  
+      return res.status(200).json({
+        status: 'success',
+        payload: payload,
+        totalPages: totalPages,
+        prevPage: prevPage,
+        nextPage: nextPage,
+        page: currentPage,
+        hasPrevPage: hasPrevPage,
+        hasNextPage: hasNextPage,
+        prevLink: prevLink,
+        nextLink: nextLink,
+      });
     } catch (error) {
-        res.status(400).json({error})
+      return res.status(400).json({ error: error.message });
     }
-}) */
-
-router.get('/',async(req, res)=>{
-    try {
-        const { limit = 10, page = 1, sort, query } = req.query;
-
-        const options = {
-            limit: parseInt(limit),
-            page: parseInt(page),
-            sort: sort ? { price: sort } : null,
-            populate: 'category'
-        };
-
-        const queryFilter = query ? { category: query } : {};
-
-        const products = await Product.paginate(queryFilter, options);
-        
-        const response = {
-            status: 'success',
-            payload: products.docs,
-            totalPages: products.totalPages,
-            prevPage: products.prevPage,
-            nextPage: products.nextPage,
-            page: products.page,
-            hasPrevPage: products.hasPrevPage,
-            hasNextPage: products.hasNextPage,
-            prevLink: products.hasPrevPage ? `/products?page=${products.prevPage}&limit=${limit}&sort=${sort}&query=${query}` : null,
-            nextLink: products.hasNextPage ? `/products?page=${products.nextPage}&limit=${limit}&sort=${sort}&query=${query}` : null,
-        };
-
-        res.json(response);
-
-    } catch (error) {
-        res.status(400).json({error})
-    }
-})
+  });
 
 router.get('/loadData',async (req, res) => {
     try {

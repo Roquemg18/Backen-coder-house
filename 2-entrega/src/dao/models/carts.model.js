@@ -3,14 +3,13 @@ const mongoose = require('mongoose');
 const collectionName = 'carts'
 
 const collectionSchema = new mongoose.Schema({
-    first_name: String,
-    last_name: String,
-    email: {
-        type: String,
-        unique: true
+    carts:{
+        product: { type: Array, ref: 'Product' },
+        quantity: { type: Number, default: 1 },
     }
 })
 
 const Carts = mongoose.model(collectionName, collectionSchema)
 
 module.exports = Carts
+
