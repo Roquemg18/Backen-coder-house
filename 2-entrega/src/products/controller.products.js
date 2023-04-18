@@ -46,10 +46,11 @@ router.get('/', async (req, res) => {
         limit: parseInt(limit),
         sort: sortOrder,
       };
-  
+      
       const products = await Product.paginate(filters, options);
-  
-      const payload = products.docs;
+      
+      const infoProductos = products.docs
+      
       const totalPages = products.totalPages;
       const prevPage = products.prevPage;
       const nextPage = products.nextPage;
@@ -58,10 +59,9 @@ router.get('/', async (req, res) => {
       const hasNextPage = products.hasNextPage;
       const prevLink = hasPrevPage ? `http://${req.headers.host}${req.baseUrl}?page=${prevPage}&limit=${limit}` : null;
       const nextLink = hasNextPage ? `http://${req.headers.host}${req.baseUrl}?page=${nextPage}&limit=${limit}` : null;
-  
-      return res.status(200).json({
+      
+      const infoProducts = {
         status: 'success',
-        payload: payload,
         totalPages: totalPages,
         prevPage: prevPage,
         nextPage: nextPage,
@@ -70,9 +70,12 @@ router.get('/', async (req, res) => {
         hasNextPage: hasNextPage,
         prevLink: prevLink,
         nextLink: nextLink,
-      });
+        products: products.docs}
+
+      res.render("products.handlebars",{infoProductos})
+      
     } catch (error) {
-      return res.status(400).json({ error: error.message });
+      return res.status(400).render("error.handlebars", { error: error.message });
     }
   });
 
@@ -97,7 +100,7 @@ router.post('/',uploader.single('file'), async(req, res)=>{
             price,
             stock,
             category,
-            thumbnail:req.file.filename
+            //thumbnail:req.file.filename
             
         }
         const newProduct = await Products.create(newProductInfo)

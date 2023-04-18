@@ -21,7 +21,7 @@ router.get('/:cid',async(req, res)=>{
     try {
     const cid = req.params.cid
     const cart = await Carts.findId(cid)
-    res.json({message:cart})
+    res.render("cart.handlebars",{cart})
     } catch (error) {
         res.status(400).json({error})
     }
