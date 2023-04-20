@@ -1,9 +1,11 @@
-{{#each infoProductos}}
+<h1>Productos</h1>
+{{#each payload}}
+ 
   <div>
     <h3>{{this.title}}</h3>
     <p>{{this.description}}</p>
     <p>Price: ${{this.price}}</p>
-    <p>Category: {{this.category}}</p>
+    <p>Stock: {{this.stock}}</p>
     <form action="/carts/add" method="POST">
       <input type="hidden" name="productId" value="{{_id}}">
       <button type="submit">Add to cart</button>
@@ -11,7 +13,7 @@
   </div>
 {{/each}}
 
-
+<h2>Pagina {{this.currentPage}} of {{this.totalPages}}</h2>
 <div>
   <a href="?page={{prevPage}}">Previous</a>
   <a href="?page={{nextPage}}">Next</a>
