@@ -4,7 +4,7 @@ const collectionName = 'carts'
 
 const collectionSchema = new mongoose.Schema({
     carts:{
-        product: { type: Array, ref: 'Product' },
+        product: { type: Array },
         quantity: { type: Number, default: 1 },
     }
 })

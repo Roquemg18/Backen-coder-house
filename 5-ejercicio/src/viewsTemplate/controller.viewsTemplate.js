@@ -17,7 +17,7 @@ router.get("/login", publicAccess, (req, res) => {
   res.render("login.handlebars");
 });
 
-router.get("/products", (res, req) => {
+router.get("/products", publicAccess, (res, req) => {
   res.render("products.handlebars");
 });
 module.exports = router;

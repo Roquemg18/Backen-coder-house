@@ -2,7 +2,6 @@ const form = document.getElementById("loginForm");
 
 form.addEventListener("submit", (e) => {
   e.preventDefault();
-
   const data = new FormData(form);
   const obj = {};
 
@@ -21,6 +20,9 @@ form.addEventListener("submit", (e) => {
     body,
   })
     .then((response) => response.json())
-    .then((data) => console.log(data))
+    .then((data) => {
+      console.log(data);
+      document.location.href = "/products";
+    })
     .catch((error) => console.log(error));
 });

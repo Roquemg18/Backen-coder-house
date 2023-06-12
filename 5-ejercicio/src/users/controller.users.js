@@ -1,5 +1,6 @@
 const { Router } = require("express");
 const Users = require("../dao/models/users.model");
+const { hashPassword } = require("../utils/cryptPassword.util");
 
 const router = Router();
 
